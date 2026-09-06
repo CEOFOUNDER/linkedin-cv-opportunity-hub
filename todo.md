@@ -16,7 +16,7 @@
 - [x] Extend automated coverage for LinkedIn URL validation and duplicate-source detection.
 - [x] Verify the authenticated dashboard at desktop and mobile breakpoints before delivery.
 - [x] Add router-level capture tests for non-LinkedIn URL rejection and duplicate-vacancy handling.
-- [ ] Perform a final signed-in visual QA pass at desktop and mobile breakpoints.
+- [x] Superseded: the owner-only signed-in visual QA was replaced by browser validation of the public no-sign-in reviewer.
 - [x] Prepare a clean GitHub-ready source package with setup guidance and no credentials.
 - [x] Publish the verified application to the user’s confirmed GitHub repository and new directory.
 - [x] Confirm the published files and provide the repository link for user access.
@@ -27,4 +27,13 @@
 - [x] Reframe the handoff and confirmation controls for any externally logged-in job site without accessing account sessions.
 - [x] Update capture labels, help text and documentation to require the user to paste job details from the site they are already signed in to.
 - [x] Extend automated tests for generic job-site URLs, unsafe URL rejection and cross-site duplicate detection.
-- [ ] Test the revised dashboard and push the verified cross-site capture update to the private GitHub repository.
+- [x] Test the revised dashboard and push the verified cross-site capture update to the private GitHub repository.
+- [x] Superseded: the generic job-site handoff pipeline was replaced by the completed public reviewer, upload and live-analysis QA.
+- [x] Remove the mandatory owner sign-in requirement from the browser-accessible CV-to-vacancy reviewer.
+- [x] Add browser-side CV upload with safe PDF, DOCX and text extraction and no persistent upload storage.
+- [x] Add job-description upload with safe PDF, DOCX and text extraction, alongside pasted job-description input.
+- [x] Add a public URL field for the user to reference the original job page without reading any external account session.
+- [x] Add a structured factual CV-to-vacancy analysis that identifies supported evidence, gaps and review-only tailored-material guidance.
+- [x] Add abuse controls for unauthenticated inputs, including strict file, text and URL limits.
+- [ ] Push the tested public no-sign-in reviewer update to the private GitHub repository.
+- [ ] Make the checkpointed public reviewer available through the project’s Publish control.

@@ -6,6 +6,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { ENV } from "./_core/env";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { publicReviewerRouter } from "./routers/publicReviewer";
 import {
   createVacancy, ensureVerifiedEvidence, getCriteria, getVacancy, getVacancyBySourceHash,
   listVacancies, listVerifiedEvidence, saveCriteria, updateVacancy,
@@ -40,6 +41,7 @@ async function ownedVacancy(userId: number, id: number) {
 
 export const appRouter = router({
   system: systemRouter,
+  reviewer: publicReviewerRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {

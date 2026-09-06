@@ -1,77 +1,51 @@
-# LinkedIn Opportunity Hub
+# Opportunity Control Room
 
-LinkedIn Opportunity Hub is a **private, review-first job-search dashboard**. It lets an authorised owner capture a vacancy that they have manually opened on any public job site, compare it with verified CV evidence, manage it in a controlled pipeline and prepare factual application materials for review.
+Opportunity Control Room is a **browser-accessible CV-to-vacancy evidence reviewer**. It accepts a CV and a job description as pasted text or an uploaded document, then compares them against one another while preventing unsupported requirements from being converted into claims.
 
-> The application **does not access, control, navigate, complete forms in, or submit through any job-site account**. The user remains responsible for every final external action.
+> **No sign-in is required.** The app does not access job-site accounts, browser sessions or credentials. It neither completes nor submits applications. The user remains in control of every external action.
 
-## Operating model
+## How it works
 
-| Stage | Purpose | Controlled transition |
-| --- | --- | --- |
-| Captured | A user supplies a safe public job-site URL and pasted job description. | Move to Review or Archived. |
-| Review | The vacancy is assessed against verified evidence only. | Move to Approved, return to Captured or Archive. |
-| Approved | The user authorises factual CV-tailoring and supporting-material drafts. | Confirm an external manual handoff or Archive. |
-| Applied | The role is recorded only after the user submits manually on the original job site and enters the exact confirmation phrase. | Move to Archived. |
-| Archived | The role is closed, paused or no longer relevant. | Return to Review if needed. |
-
-The dashboard blocks direct progression to **Applied**. It also requires an explicit, recorded confirmation before providing the outbound original-job-site handoff for an Approved role.
-
-## External job-site capture
-
-You can capture vacancies from employer career sites, applicant-tracking systems and job boards, including sites where you are already signed in. Copy the address of the open role and paste the complete job description into the dashboard; the application extracts the role detail from that user-supplied text.
-
-The dashboard deliberately does **not** read your browser session, credentials or authenticated page content. This preserves your control of each account and prevents the application from acting on your behalf. It accepts safe public `http` or `https` URLs, rejects embedded credentials and local or private-network addresses, and removes recognised tracking parameters for duplicate detection while retaining meaningful vacancy identifiers.
+| Step | What you provide | What the app does | What it does not do |
+| --- | --- | --- | --- |
+| 1. CV evidence | A previous CV as PDF, DOCX, TXT, Markdown, RTF or pasted text. | Reads document text in the browser and makes it editable. | It does not save the uploaded file. |
+| 2. Role specification | An optional original job URL, plus a pasted or uploaded job description. | Treats the URL as a reference and compares the supplied specification against the CV. | It does not visit the URL, read a logged-in page or reuse browser-session data. |
+| 3. Evidence review | Your decision to run a comparison. | Sends the entered text to the server-side comparison service and returns structured evidence matches, gaps and review directions. | It does not store the CV, job description or result in the application database or file storage. |
+| 4. Application | Your own review and use of the findings. | Presents direct CV quotations that support a requirement, alongside gaps. | It does not produce unsupported claims, operate a job-site account or submit an application. |
 
 ## Evidence boundary
 
-All vacancy scoring and prepared materials draw from the verified career evidence seeded for the workspace owner. The analysis displays both matched requirements and unsupported gaps. Gaps are deliberately excluded from the CV-tailoring brief and supporting-material draft.
+The reviewer is deliberately constrained. A requirement is shown as **supported** only where the analysis identifies a short, exact quotation from the CV. Missing, weak or unclear requirements remain in **Unsupported or unclear gaps**. The output is a document-alignment aid—not a hiring prediction—and all final wording remains subject to your own review.
 
-This project is designed around the verified profile of **Gilles Bonelli FCCA**. Before adapting it for another person, replace the evidence source with a reviewed, authorised profile and keep the same no-fabrication control.
+## Supported uploads and limits
 
-## Features
+| Document | Supported formats | Maximum size | Important note |
+| --- | --- | ---: | --- |
+| CV | PDF, DOCX, TXT, Markdown, RTF | 5 MB | PDFs must contain selectable text; use pasted text for scanned/image-only PDFs. |
+| Job description | PDF, DOCX, TXT, Markdown, RTF | 5 MB | The role text can also be pasted directly from the page you have open. |
+| Job URL | Public `http` or `https` URL | 2,048 characters | The URL is never fetched. Local addresses, private-network URLs and embedded credentials are rejected. |
 
-| Area | Included behaviour |
+The editable text area is capped at 60,000 characters per document. Uploaded files are handled locally in the browser; the extracted text is sent for analysis only when the user starts a factual comparison. The app does not persist uploads or comparison text.
+
+## Safety controls
+
+| Control | Behaviour |
 | --- | --- |
-| Manual job-site handoff | Stores a URL and pasted job description only; no account automation or browser-session access. |
-| Criteria | Editable target titles, location, remote preferences, employment type, compensation threshold, sectors and exclusions. |
-| Vacancy review | Normalised URL based duplicate detection, role-detail extraction, deadline and private notes. |
-| Evidence scoring | Rule-based fit score, rationale, verified requirement matches and visible unsupported gaps. |
-| Application preparation | ATS-aware CV-tailoring brief and supporting-material draft for Approved roles, held for review. |
-| Safeguards | Owner-restricted procedures, fixed pipeline stages, confirmation-gated manual handoff and confirmation-gated Applied status. |
-
-## Technology
-
-The project uses React, TypeScript, Tailwind CSS, Express, tRPC, Drizzle ORM and a MySQL-compatible database. It is based on the Manus full-stack application template and uses the template’s OAuth and server-side environment integration.
+| No external account access | The app does not log in to any job platform, read logged-in pages or use account credentials. |
+| Manual applications | All form completion, outreach and submission stay manual and user-approved. |
+| Direct-evidence matching | Each displayed match must include an exact CV quotation. |
+| Visible gaps | Missing or unclear requirements are called out instead of implied or invented. |
+| Input limits | File size, document length, URL format and short per-browser request limits reduce abuse exposure. |
 
 ## Local development
 
-This source code expects platform-provided environment variables for OAuth, database access and service configuration. Do **not** commit real credentials or a `.env` file.
+The app is built with React, TypeScript, Tailwind CSS, Express, tRPC, Drizzle ORM and the Manus server-side language-model integration.
 
 ```bash
 pnpm install
-pnpm drizzle-kit generate
 pnpm test
 pnpm check
 pnpm dev
 ```
 
-When connected to a compatible database, review each generated SQL migration under `drizzle/` before applying it. The existing migrations create the criteria, verified-evidence and vacancy tables, then add the recorded external-handoff confirmation fields.
-
-## Validation
-
-The test suite covers the core safety and processing rules, including:
-
-- Generic job-site URL normalisation and source duplicate checks.
-- Unsafe, malformed, local and credential-bearing URL rejection at the protected capture procedure.
-- Duplicate capture reporting without a second vacancy record.
-- Evidence matching and isolation of unsupported requirements.
-- Exclusion of unsupported requirements from supporting-material drafts.
-- Prevention of direct movement to Applied.
-
-Run the complete suite with `pnpm test && pnpm check`.
-
-## Security and privacy
-
-The app has been built as a personal workspace. Protected procedures restrict access to the configured owner, while the browser interface requires authentication. Vacancy content, notes, career evidence and generated drafts should be treated as sensitive personal and professional information.
-
-Before public deployment, verify the owner identity configuration, use an appropriate database security configuration, and ensure that access is limited to the intended user.
+The public comparison endpoint uses platform-provided server credentials. Do **not** commit real credentials or a `.env` file. Run the full validation suite with `pnpm test && pnpm check`.
