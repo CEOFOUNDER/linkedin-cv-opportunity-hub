@@ -43,5 +43,6 @@
 - [x] Add a GitHub Actions workflow that builds and deploys the frontend to GitHub Pages.
 - [x] Document production deployment, API connection and required configuration in the GitHub repository.
 - [x] Validate the production-style frontend build, backend API and GitHub Pages deployment configuration before publishing the update.
-- [ ] Push the GitHub Pages and secure-backend production configuration to the private repository.
+- [x] Push the GitHub Pages and secure-backend production configuration to the private repository.
 - [ ] Configure the GitHub Pages API endpoint variable and activate the GitHub Actions Pages deployment.
+- [ ] Repair the GitHub Actions deployment workflow so it installs pnpm before validating and building the GitHub Pages site.
