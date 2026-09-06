@@ -35,5 +35,13 @@
 - [x] Add a public URL field for the user to reference the original job page without reading any external account session.
 - [x] Add a structured factual CV-to-vacancy analysis that identifies supported evidence, gaps and review-only tailored-material guidance.
 - [x] Add abuse controls for unauthenticated inputs, including strict file, text and URL limits.
-- [ ] Push the tested public no-sign-in reviewer update to the private GitHub repository.
+- [x] Push the tested public no-sign-in reviewer update to the private GitHub repository.
 - [ ] Make the checkpointed public reviewer available through the project’s Publish control.
+- [x] Split the public reviewer into a GitHub Pages frontend and a secure Manus-backed analysis API while keeping all source in GitHub.
+- [x] Add explicit cross-origin controls so only the GitHub Pages site can invoke the production analysis endpoint.
+- [x] Add build-time public configuration for the GitHub Pages API endpoint without exposing server credentials.
+- [x] Add a GitHub Actions workflow that builds and deploys the frontend to GitHub Pages.
+- [x] Document production deployment, API connection and required configuration in the GitHub repository.
+- [x] Validate the production-style frontend build, backend API and GitHub Pages deployment configuration before publishing the update.
+- [ ] Push the GitHub Pages and secure-backend production configuration to the private repository.
+- [ ] Configure the GitHub Pages API endpoint variable and activate the GitHub Actions Pages deployment.

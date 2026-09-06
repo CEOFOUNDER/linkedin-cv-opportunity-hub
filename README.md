@@ -49,3 +49,22 @@ pnpm dev
 ```
 
 The public comparison endpoint uses platform-provided server credentials. Do **not** commit real credentials or a `.env` file. Run the full validation suite with `pnpm test && pnpm check`.
+
+## GitHub Pages production architecture
+
+The repository is the complete source of truth. GitHub Pages publishes the browser interface from the same source tree, while the secure Manus production service runs the analysis endpoint. This separation keeps server credentials off the public Pages site.
+
+| Component | Location | Responsibility |
+| --- | --- | --- |
+| Public interface | `https://ceofounder.github.io/linkedin-cv-opportunity-hub/` | Displays the upload, paste, source-URL and evidence-review workflow. |
+| Source and automation | This GitHub repository | Holds the React client, Express/tRPC server, tests and `.github/workflows/deploy-pages.yml`. |
+| Protected analysis service | Published Manus deployment | Receives comparison text only when the user starts a review and calls the server-side language model. |
+
+### One-time production configuration
+
+1. Publish the current Manus project. Copy its public URL, without `/api/trpc`.
+2. In GitHub, open **Settings → Secrets and variables → Actions → Variables**, and add the repository variable `MANUS_REVIEWER_API_URL` with that Manus URL as its value. This is a public endpoint URL, not a secret; no model credential belongs in GitHub.
+3. In GitHub, open **Settings → Pages** and set the deployment source to **GitHub Actions**.
+4. Push to `main` or run the **Deploy public reviewer to GitHub Pages** workflow. The action runs the tests, type-checks the source, builds the Pages-specific client and deploys the interface.
+
+The API allows cross-origin browser calls only from `https://ceofounder.github.io` and its own origin. The browser sends no API credentials; the secure production service keeps the language-model credential on the server.

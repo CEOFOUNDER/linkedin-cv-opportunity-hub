@@ -8,6 +8,7 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { isAllowedReviewerOrigin } from "../reviewerCors";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -36,6 +37,20 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+  app.use("/api/trpc", (req, res, next) => {
+    const origin = req.get("origin");
+    if (!isAllowedReviewerOrigin(req, origin)) {
+      return res.status(403).json({ error: "This analysis API only accepts requests from the configured GitHub Pages site or its own origin." });
+    }
+    if (origin) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+      res.setHeader("Vary", "Origin");
+      res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, trpc-accept");
+    }
+    if (req.method === "OPTIONS") return res.sendStatus(204);
+    return next();
+  });
   // tRPC API
   app.use(
     "/api/trpc",
