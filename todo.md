@@ -18,8 +18,8 @@
 - [ ] Add router-level capture tests for non-LinkedIn URL rejection and duplicate-vacancy handling.
 - [ ] Perform a final signed-in visual QA pass at desktop and mobile breakpoints.
 - [x] Prepare a clean GitHub-ready source package with setup guidance and no credentials.
-- [ ] Publish the verified application to the user’s confirmed GitHub repository and new directory.
-- [ ] Confirm the published files and provide the repository link for user access.
+- [x] Publish the verified application to the user’s confirmed GitHub repository and new directory.
+- [x] Confirm the published files and provide the repository link for user access.
 - [x] Curate the GitHub file set and review generated migration records for inclusion.
 - [x] Complete a broader sensitive-artifact audit before publishing source code.
 - [x] Review initial, feature and handoff migrations for intentional GitHub inclusion.
