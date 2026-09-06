@@ -12,12 +12,12 @@ import {
 } from "./db";
 import {
   PIPELINE_STAGES, analyseVacancy, buildSupportingDraft, buildTailoringBrief, extractRoleDetails,
-  isAllowedStageMove, normalizeLinkedInUrl, type PipelineStage,
+  isAllowedStageMove, isSafeJobSiteUrl, normalizeSourceUrl, type PipelineStage,
 } from "./jobSearch";
 
 const stages = z.enum(PIPELINE_STAGES);
-const handoffConfirmationPhrase = "I am ready to review this application manually on LinkedIn";
-const confirmationPhrase = "I confirmed this application manually on LinkedIn";
+const handoffConfirmationPhrase = "I am ready to review this application manually on the original job site";
+const confirmationPhrase = "I confirmed this application manually on the original job site";
 
 function personalUser(ctx: { user: { id: number; openId: string } | null }) {
   if (!ctx.user || ctx.user.openId !== ENV.ownerOpenId) {
@@ -66,7 +66,7 @@ export const appRouter = router({
       exclusions: z.array(z.string().trim().min(1)).max(20),
     })).mutation(async ({ ctx, input }) => saveCriteria(await preparePersonalWorkspace(ctx), input)),
     capture: protectedProcedure.input(z.object({
-      linkedinUrl: z.string().url().refine(url => /(^|\.)linkedin\.com$/i.test(new URL(url).hostname), "Use a LinkedIn vacancy URL."),
+      sourceUrl: z.string().trim().max(2048).refine(isSafeJobSiteUrl, "Use a valid public HTTP(S) job-site URL without embedded credentials."),
       description: z.string().trim().min(30).max(60000),
       title: z.string().trim().max(255).optional(),
       employer: z.string().trim().max(255).optional(),
@@ -75,13 +75,13 @@ export const appRouter = router({
       deadline: z.string().datetime().optional(),
     })).mutation(async ({ ctx, input }) => {
       const userId = await preparePersonalWorkspace(ctx);
-      const normalizedUrl = normalizeLinkedInUrl(input.linkedinUrl);
+      const normalizedUrl = normalizeSourceUrl(input.sourceUrl);
       const sourceHash = createHash("sha256").update(normalizedUrl).digest("hex");
       const duplicate = await getVacancyBySourceHash(userId, sourceHash);
       if (duplicate) return { duplicate: true, vacancy: duplicate };
       const details = extractRoleDetails(input.description, input.title, input.employer, input.location);
       const vacancy = await createVacancy(userId, {
-        linkedinUrl: input.linkedinUrl,
+        sourceUrl: input.sourceUrl,
         normalizedUrl,
         sourceHash,
         ...details,
@@ -114,7 +114,7 @@ export const appRouter = router({
       const userId = await preparePersonalWorkspace(ctx);
       const vacancy = await ownedVacancy(userId, input.id);
       if (input.stage === "Applied" || !isAllowedStageMove(vacancy.stage as PipelineStage, input.stage)) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "That stage change is not permitted. Applied requires manual LinkedIn confirmation." });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "That stage change is not permitted. Applied requires a manual confirmation." });
       }
       return updateVacancy(userId, vacancy.id, { stage: input.stage });
     }),
@@ -136,17 +136,17 @@ export const appRouter = router({
     confirmHandoff: protectedProcedure.input(z.object({ id: z.number().int().positive(), confirmation: z.string() })).mutation(async ({ ctx, input }) => {
       const userId = await preparePersonalWorkspace(ctx);
       const vacancy = await ownedVacancy(userId, input.id);
-      if (vacancy.stage !== "Approved") throw new TRPCError({ code: "BAD_REQUEST", message: "Only Approved roles can open a manual LinkedIn handoff." });
+      if (vacancy.stage !== "Approved") throw new TRPCError({ code: "BAD_REQUEST", message: "Only Approved roles can open a manual external-site handoff." });
       if (input.confirmation !== handoffConfirmationPhrase) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "The LinkedIn handoff confirmation phrase must match exactly." });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "The external-site handoff confirmation phrase must match exactly." });
       }
-      return updateVacancy(userId, vacancy.id, { linkedinHandoffConfirmed: 1, linkedinHandoffConfirmedAt: new Date() });
+      return updateVacancy(userId, vacancy.id, { externalHandoffConfirmed: 1, externalHandoffConfirmedAt: new Date() });
     }),
     confirmApplied: protectedProcedure.input(z.object({ id: z.number().int().positive(), confirmation: z.string() })).mutation(async ({ ctx, input }) => {
       const userId = await preparePersonalWorkspace(ctx);
       const vacancy = await ownedVacancy(userId, input.id);
       if (vacancy.stage !== "Approved") throw new TRPCError({ code: "BAD_REQUEST", message: "Only Approved roles can be marked as Applied." });
-      if (!vacancy.linkedinHandoffConfirmed) throw new TRPCError({ code: "BAD_REQUEST", message: "Confirm the manual LinkedIn handoff before recording an application." });
+      if (!vacancy.externalHandoffConfirmed) throw new TRPCError({ code: "BAD_REQUEST", message: "Confirm the manual external-site handoff before recording an application." });
       if (input.confirmation !== confirmationPhrase) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "The manual confirmation phrase must match exactly." });
       }

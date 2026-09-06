@@ -41,17 +41,34 @@ function unique<T>(values: T[]) {
   return Array.from(new Set(values));
 }
 
-export function normalizeLinkedInUrl(url: string) {
+const trackingParam = /^(utm_|trk$|tracking|source$|ref$|referrer$|campaign$|mc_)/i;
+
+function isPrivateIpv4(hostname: string) {
+  const parts = hostname.split(".").map(Number);
+  if (parts.length !== 4 || parts.some(part => !Number.isInteger(part) || part < 0 || part > 255)) return false;
+  return parts[0] === 10 || parts[0] === 127 || (parts[0] === 169 && parts[1] === 254) || (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) || (parts[0] === 192 && parts[1] === 168);
+}
+
+/** Canonicalises a public external vacancy URL while retaining identity-bearing query parameters. */
+export function normalizeSourceUrl(url: string) {
   const parsed = new URL(url.trim());
   const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
   const path = parsed.pathname.replace(/\/+$/, "") || "/";
-  return `https://${host}${path}`;
+  const parameters = Array.from(parsed.searchParams.entries())
+    .filter(([key]) => !trackingParam.test(key))
+    .sort(([left], [right]) => left.localeCompare(right));
+  const query = parameters.length ? `?${new URLSearchParams(parameters).toString()}` : "";
+  return `${parsed.protocol}//${host}${path}${query}`;
 }
 
-export function isLinkedInJobUrl(url: string) {
+/** Accepts public HTTP(S) role pages but blocks credentials, local hosts and private-network addresses. */
+export function isSafeJobSiteUrl(url: string) {
   try {
-    const hostname = new URL(url.trim()).hostname.toLowerCase().replace(/^www\./, "");
-    return hostname === "linkedin.com" || hostname.endsWith(".linkedin.com");
+    const parsed = new URL(url.trim());
+    const hostname = parsed.hostname.toLowerCase().replace(/^www\./, "").replace(/^\[|\]$/g, "");
+    if (!hostname || !["http:", "https:"].includes(parsed.protocol) || parsed.username || parsed.password) return false;
+    if (["localhost", "localhost.localdomain", "::1"].includes(hostname) || hostname.endsWith(".local") || hostname.endsWith(".internal")) return false;
+    return !isPrivateIpv4(hostname);
   } catch {
     return false;
   }

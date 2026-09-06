@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { analyseVacancy, buildSupportingDraft, buildTailoringBrief, isAllowedStageMove, isDuplicateSource, isLinkedInJobUrl, normalizeLinkedInUrl } from "./jobSearch";
+import { analyseVacancy, buildSupportingDraft, buildTailoringBrief, isAllowedStageMove, isDuplicateSource, isSafeJobSiteUrl, normalizeSourceUrl } from "./jobSearch";
 
 const evidence = [
   { id: 1, category: "AI governance", claim: "Set AI governance principles for explainability, control and compliance.", keywords: ["ai governance", "explainability", "compliance", "controls"] },
@@ -7,16 +7,18 @@ const evidence = [
 ];
 
 describe("job-search safeguards", () => {
-  it("normalises LinkedIn URLs so tracking parameters do not bypass duplicate detection", () => {
-    expect(normalizeLinkedInUrl("https://www.linkedin.com/jobs/view/123/?trackingId=abc")).toBe("https://linkedin.com/jobs/view/123");
+  it("normalises generic job-site URLs so tracking parameters do not bypass duplicate detection", () => {
+    expect(normalizeSourceUrl("https://jobs.example.com/openings/123/?trackingId=abc&utm_source=search&jobId=42")).toBe("https://jobs.example.com/openings/123?jobId=42");
     expect(isDuplicateSource("recorded-source", "recorded-source")).toBe(true);
     expect(isDuplicateSource("recorded-source", "different-source")).toBe(false);
   });
 
-  it("accepts LinkedIn URLs but rejects other or malformed destinations", () => {
-    expect(isLinkedInJobUrl("https://www.linkedin.com/jobs/view/123")).toBe(true);
-    expect(isLinkedInJobUrl("https://example.com/jobs/view/123")).toBe(false);
-    expect(isLinkedInJobUrl("not-a-url")).toBe(false);
+  it("accepts public job-site URLs while rejecting unsafe or malformed destinations", () => {
+    expect(isSafeJobSiteUrl("https://boards.greenhouse.io/example/jobs/123")).toBe(true);
+    expect(isSafeJobSiteUrl("https://example.com/jobs/view/123")).toBe(true);
+    expect(isSafeJobSiteUrl("https://user:password@example.com/jobs/123")).toBe(false);
+    expect(isSafeJobSiteUrl("http://localhost/jobs/123")).toBe(false);
+    expect(isSafeJobSiteUrl("not-a-url")).toBe(false);
   });
 
   it("identifies unsupported requirements as gaps rather than claims", () => {

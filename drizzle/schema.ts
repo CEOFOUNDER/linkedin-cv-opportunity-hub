@@ -57,7 +57,8 @@ export const vacancies = mysqlTable(
   {
     id: int("id").autoincrement().primaryKey(),
     userId: int("userId").notNull(),
-    linkedinUrl: varchar("linkedinUrl", { length: 2048 }).notNull(),
+    // Physical column name is retained solely to preserve existing records; the application treats this as a generic external source URL.
+    sourceUrl: varchar("linkedinUrl", { length: 2048 }).notNull(),
     normalizedUrl: varchar("normalizedUrl", { length: 2048 }).notNull(),
     sourceHash: varchar("sourceHash", { length: 64 }).notNull(),
     title: varchar("title", { length: 255 }).notNull(),
@@ -73,8 +74,9 @@ export const vacancies = mysqlTable(
     supportingDraft: text("supportingDraft"),
     notes: text("notes"),
     deadline: timestamp("deadline"),
-    linkedinHandoffConfirmed: int("linkedinHandoffConfirmed").notNull().default(0),
-    linkedinHandoffConfirmedAt: timestamp("linkedinHandoffConfirmedAt"),
+    // Physical names are retained for backwards-compatible storage; the workflow is no longer LinkedIn-specific.
+    externalHandoffConfirmed: int("linkedinHandoffConfirmed").notNull().default(0),
+    externalHandoffConfirmedAt: timestamp("linkedinHandoffConfirmedAt"),
     applicationConfirmed: int("applicationConfirmed").notNull().default(0),
     applicationConfirmedAt: timestamp("applicationConfirmedAt"),
     createdAt: timestamp("createdAt").defaultNow().notNull(),

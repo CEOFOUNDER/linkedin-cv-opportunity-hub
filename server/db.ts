@@ -133,7 +133,7 @@ export async function getVacancyBySourceHash(userId: number, sourceHash: string)
 }
 
 export async function createVacancy(userId: number, input: {
-  linkedinUrl: string; normalizedUrl: string; sourceHash: string; title: string; employer: string; location: string;
+  sourceUrl: string; normalizedUrl: string; sourceHash: string; title: string; employer: string; location: string;
   description: string; notes?: string; deadline?: Date | null;
 }) {
   const db = await requireDb();
@@ -146,7 +146,7 @@ export async function updateVacancy(userId: number, id: number, fields: {
   stage?: "Captured" | "Review" | "Approved" | "Applied" | "Archived";
   fitScore?: number | null; fitRationale?: string | null; matchedRequirements?: string | null; unsupportedGaps?: string | null;
   tailoringBrief?: string | null; supportingDraft?: string | null; notes?: string | null; deadline?: Date | null;
-  linkedinHandoffConfirmed?: number; linkedinHandoffConfirmedAt?: Date | null;
+  externalHandoffConfirmed?: number; externalHandoffConfirmedAt?: Date | null;
   applicationConfirmed?: number; applicationConfirmedAt?: Date | null;
 }) {
   const db = await requireDb();

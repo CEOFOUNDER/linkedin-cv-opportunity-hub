@@ -43,30 +43,47 @@ describe("jobSearch.capture", () => {
     dbMocks.getVacancyBySourceHash.mockResolvedValue(undefined);
   });
 
-  it("rejects a non-LinkedIn source before it reaches the capture workflow", async () => {
+  it("rejects an unsafe source before it reaches the capture workflow", async () => {
     const caller = appRouter.createCaller(ownerContext());
 
     await expect(caller.jobSearch.capture({
-      linkedinUrl: "https://example.com/jobs/123",
+      sourceUrl: "http://localhost/jobs/123",
       description: "This role requires at least thirty characters of job-description text.",
-    })).rejects.toThrow("Use a LinkedIn vacancy URL.");
+    })).rejects.toThrow("Use a valid public HTTP(S) job-site URL without embedded credentials.");
 
     expect(dbMocks.ensureVerifiedEvidence).not.toHaveBeenCalled();
     expect(dbMocks.createVacancy).not.toHaveBeenCalled();
   });
 
-  it("returns the existing record for a duplicate LinkedIn vacancy without creating another record", async () => {
+  it("returns the existing record for a duplicate external vacancy without creating another record", async () => {
     const caller = appRouter.createCaller(ownerContext());
     const existing = { id: 42, title: "Existing role" };
     dbMocks.getVacancyBySourceHash.mockResolvedValue(existing);
 
     const result = await caller.jobSearch.capture({
-      linkedinUrl: "https://www.linkedin.com/jobs/view/123/?trackingId=abc",
+      sourceUrl: "https://jobs.example.com/openings/123/?trackingId=abc",
       description: "This role requires at least thirty characters of job-description text.",
     });
 
     expect(result).toEqual({ duplicate: true, vacancy: existing });
     expect(dbMocks.getVacancyBySourceHash).toHaveBeenCalledTimes(1);
     expect(dbMocks.createVacancy).not.toHaveBeenCalled();
+  });
+
+  it("captures a public vacancy from any job site and retains only identity-bearing URL parameters", async () => {
+    const caller = appRouter.createCaller(ownerContext());
+    const created = { id: 84, title: "Finance Transformation Director" };
+    dbMocks.createVacancy.mockResolvedValue(created);
+
+    const result = await caller.jobSearch.capture({
+      sourceUrl: "https://careers.example.org/roles/84?utm_source=search&vacancyId=84",
+      description: "This role requires at least thirty characters of job-description text.",
+    });
+
+    expect(result).toEqual({ duplicate: false, vacancy: created });
+    expect(dbMocks.createVacancy).toHaveBeenCalledWith(1, expect.objectContaining({
+      sourceUrl: "https://careers.example.org/roles/84?utm_source=search&vacancyId=84",
+      normalizedUrl: "https://careers.example.org/roles/84?vacancyId=84",
+    }));
   });
 });

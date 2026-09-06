@@ -40,7 +40,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="mx-auto mb-5 grid h-12 w-12 place-items-center border border-cyan-200/70 bg-cyan-200/10 text-cyan-100"><ShieldCheck className="h-6 w-6" /></div>
           <p className="eyebrow">PRIVATE WORKSPACE</p>
           <h1 className="mt-3 text-2xl font-semibold tracking-tight">Sign in to access your opportunity pipeline.</h1>
-          <p className="mt-3 text-sm leading-6 text-blue-100/75">This dashboard is restricted to its owner and does not control any LinkedIn account.</p>
+          <p className="mt-3 text-sm leading-6 text-blue-100/75">This dashboard is restricted to its owner and does not control any job-site account.</p>
           <Button onClick={() => startLogin()} className="mt-7 w-full rounded-none bg-white text-[#061B5A] hover:bg-cyan-50">Sign in securely</Button>
         </div>
       </div>
@@ -91,7 +91,7 @@ function DashboardContent({ children, setSidebarWidth }: { children: React.React
               <button onClick={toggleSidebar} className="grid h-8 w-8 place-items-center border border-white/20 bg-white/5 text-white hover:bg-white/10" aria-label="Toggle navigation"><PanelLeft className="h-4 w-4" /></button>
               {!isCollapsed && <div className="min-w-0"><p className="text-[10px] font-semibold tracking-[0.2em] text-cyan-100/80">OPPORTUNITY</p><p className="truncate text-sm font-semibold">CONTROL ROOM</p></div>}
             </div>
-            {!isCollapsed && <div className="mx-1 mt-5 border border-cyan-100/20 px-3 py-3"><p className="text-[9px] tracking-[0.18em] text-cyan-100/70">LINKEDIN MODE</p><p className="mt-1 text-xs leading-5 text-white/80">Capture only. Your account remains under your control.</p></div>}
+            {!isCollapsed && <div className="mx-1 mt-5 border border-cyan-100/20 px-3 py-3"><p className="text-[9px] tracking-[0.18em] text-cyan-100/70">EXTERNAL SITE MODE</p><p className="mt-1 text-xs leading-5 text-white/80">Capture only. Your account remains under your control.</p></div>}
           </SidebarHeader>
           <SidebarContent className="px-2">
             <SidebarMenu className="gap-1">

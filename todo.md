@@ -15,7 +15,7 @@
 - [x] Gate the outbound LinkedIn handoff behind a separate approved-role confirmation and record that confirmation.
 - [x] Extend automated coverage for LinkedIn URL validation and duplicate-source detection.
 - [x] Verify the authenticated dashboard at desktop and mobile breakpoints before delivery.
-- [ ] Add router-level capture tests for non-LinkedIn URL rejection and duplicate-vacancy handling.
+- [x] Add router-level capture tests for non-LinkedIn URL rejection and duplicate-vacancy handling.
 - [ ] Perform a final signed-in visual QA pass at desktop and mobile breakpoints.
 - [x] Prepare a clean GitHub-ready source package with setup guidance and no credentials.
 - [x] Publish the verified application to the user’s confirmed GitHub repository and new directory.
@@ -23,3 +23,8 @@
 - [x] Curate the GitHub file set and review generated migration records for inclusion.
 - [x] Complete a broader sensitive-artifact audit before publishing source code.
 - [x] Review initial, feature and handoff migrations for intentional GitHub inclusion.
+- [x] Replace LinkedIn-only vacancy URL acceptance with safe generic HTTP(S) job-site URL validation.
+- [x] Reframe the handoff and confirmation controls for any externally logged-in job site without accessing account sessions.
+- [x] Update capture labels, help text and documentation to require the user to paste job details from the site they are already signed in to.
+- [x] Extend automated tests for generic job-site URLs, unsafe URL rejection and cross-site duplicate detection.
+- [ ] Test the revised dashboard and push the verified cross-site capture update to the private GitHub repository.
