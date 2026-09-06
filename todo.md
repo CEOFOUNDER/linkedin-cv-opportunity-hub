@@ -1,0 +1,25 @@
+# Project TODO
+
+- [x] Define a secure vacancy, criteria, verified-evidence and preparation-material data model.
+- [x] Implement the five required pipeline stages exactly: Captured, Review, Approved, Applied and Archived.
+- [x] Add a LinkedIn handoff form that accepts a vacancy URL and pasted job description without controlling LinkedIn.
+- [x] Add editable search criteria for titles, location, remote preference, employment type, compensation, sectors and exclusions.
+- [x] Implement duplicate detection, vacancy detail extraction, deadlines, notes and original LinkedIn links.
+- [x] Score vacancies only against verified CV evidence, with fit rationale, matched requirements and unsupported gaps.
+- [x] Prevent unsupported claims from entering CV-tailoring briefs or supporting-material drafts.
+- [x] Create a review queue and application-status controls with an explicit confirmation requirement before manual LinkedIn handoff.
+- [x] Build factual ATS-friendly tailoring briefs and role-specific supporting-material drafts for approved roles.
+- [x] Apply the royal-blue architectural blueprint visual system with CAD-style grid, frames and technical line details.
+- [x] Add unit tests for validation, stage-control, duplicate-detection and evidence-boundary rules.
+- [x] Verify the responsive interface and complete final delivery checks.
+- [x] Gate the outbound LinkedIn handoff behind a separate approved-role confirmation and record that confirmation.
+- [x] Extend automated coverage for LinkedIn URL validation and duplicate-source detection.
+- [x] Verify the authenticated dashboard at desktop and mobile breakpoints before delivery.
+- [ ] Add router-level capture tests for non-LinkedIn URL rejection and duplicate-vacancy handling.
+- [ ] Perform a final signed-in visual QA pass at desktop and mobile breakpoints.
+- [x] Prepare a clean GitHub-ready source package with setup guidance and no credentials.
+- [ ] Publish the verified application to the user’s confirmed GitHub repository and new directory.
+- [ ] Confirm the published files and provide the repository link for user access.
+- [x] Curate the GitHub file set and review generated migration records for inclusion.
+- [x] Complete a broader sensitive-artifact audit before publishing source code.
+- [x] Review initial, feature and handoff migrations for intentional GitHub inclusion.
